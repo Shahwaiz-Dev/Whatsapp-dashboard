@@ -153,7 +153,7 @@ export function ContactsTable({
           <Button
             onClick={handleSync}
             disabled={syncing}
-            className="bg-emerald-600 hover:bg-emerald-700"
+            className="bg-red-600 hover:bg-red-700"
           >
             <RefreshCw
               className={`mr-2 size-4 ${syncing ? "animate-spin" : ""}`}
@@ -232,7 +232,7 @@ export function ContactsTable({
                   </TableCell>
                   <TableCell>
                     {contact.canReply ? (
-                      <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
+                      <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
                         Can reply
                       </Badge>
                     ) : (

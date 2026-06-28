@@ -1,6 +1,6 @@
-# WhatsApp Hub
+# Gymclub
 
-A Next.js dashboard for syncing contacts from Google Sheets, organizing recipient groups, sending WhatsApp messages via Meta Cloud API, and managing conversations in a clean chat UI.
+A Next.js dashboard for Gymclub to sync members from Google Sheets, organize recipient groups, send WhatsApp messages via Meta Cloud API, and manage conversations in a clean chat UI.
 
 ## Features
 

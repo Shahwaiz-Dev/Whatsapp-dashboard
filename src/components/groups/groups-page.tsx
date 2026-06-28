@@ -114,7 +114,7 @@ export function GroupsPageContent() {
         </div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-emerald-600 hover:bg-emerald-700">
+            <Button className="bg-red-600 hover:bg-red-700">
               <Plus className="mr-2 size-4" />
               New group
             </Button>

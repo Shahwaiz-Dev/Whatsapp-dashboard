@@ -124,7 +124,7 @@ export function MessageThread({ contactId }: { contactId: string }) {
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 border-b bg-background px-4 py-3">
         <Avatar>
-          <AvatarFallback className="bg-emerald-100 text-emerald-800">
+          <AvatarFallback className="bg-red-100 text-red-800">
             {getInitials(displayContact.name, displayContact.phone)}
           </AvatarFallback>
         </Avatar>
@@ -174,7 +174,7 @@ export function MessageThread({ contactId }: { contactId: string }) {
           />
           <Button
             size="icon"
-            className="shrink-0 bg-emerald-600 hover:bg-emerald-700"
+            className="shrink-0 bg-red-600 hover:bg-red-700"
             onClick={handleSend}
             disabled={sending || !message.trim()}
           >

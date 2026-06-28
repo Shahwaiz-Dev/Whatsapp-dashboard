@@ -80,7 +80,7 @@ export function ConversationList() {
               )}
             >
               <Avatar className="size-11">
-                <AvatarFallback className="bg-emerald-100 text-emerald-800">
+                <AvatarFallback className="bg-red-100 text-red-800">
                   {getInitials(conv.contact.name, conv.contact.phone)}
                 </AvatarFallback>
               </Avatar>
@@ -102,7 +102,7 @@ export function ConversationList() {
                       : "No messages"}
                   </p>
                   {conv.unreadCount > 0 && (
-                    <Badge className="size-5 shrink-0 justify-center rounded-full bg-emerald-600 p-0 text-[10px]">
+                    <Badge className="size-5 shrink-0 justify-center rounded-full bg-red-600 p-0 text-[10px]">
                       {conv.unreadCount}
                     </Badge>
                   )}

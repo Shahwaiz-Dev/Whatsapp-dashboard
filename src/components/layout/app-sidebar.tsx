@@ -51,12 +51,12 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-600 text-white">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-red-600 text-white">
             <MessageCircle className="size-4" />
           </div>
           <div>
-            <p className="text-sm font-semibold">WhatsApp Hub</p>
-            <p className="text-xs text-muted-foreground">Message dashboard</p>
+            <p className="text-sm font-semibold">Gymclub</p>
+            <p className="text-xs text-muted-foreground">Member messaging</p>
           </div>
         </Link>
       </SidebarHeader>
@@ -108,7 +108,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <SidebarTrigger />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <span className="text-sm text-muted-foreground">
-            Manage contacts, groups, and WhatsApp conversations
+            Manage members, groups, and WhatsApp conversations
           </span>
         </header>
         <main className="flex-1 overflow-auto p-6">{children}</main>

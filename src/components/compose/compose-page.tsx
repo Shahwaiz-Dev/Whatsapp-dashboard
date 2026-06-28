@@ -195,7 +195,7 @@ export function ComposePageContent() {
 
               {selectedContacts.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-emerald-100 text-emerald-800">
+                  <Badge className="bg-red-100 text-red-800">
                     {canReplyCount} can receive
                   </Badge>
                   {templateRequiredCount > 0 && (
@@ -207,7 +207,7 @@ export function ComposePageContent() {
               )}
 
               <Button
-                className="w-full bg-emerald-600 hover:bg-emerald-700"
+                className="w-full bg-red-600 hover:bg-red-700"
                 onClick={handleSend}
                 disabled={sending}
               >

@@ -45,15 +45,15 @@ export default function LoginPageClient() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-zinc-50 via-white to-emerald-50 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-white via-white to-red-50 p-4">
+      <Card className="w-full max-w-md border-red-100 shadow-lg">
         <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-emerald-600 text-white">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-red-600 text-white">
             <MessageCircle className="size-6" />
           </div>
-          <CardTitle className="text-2xl">WhatsApp Hub</CardTitle>
+          <CardTitle className="text-2xl">Gymclub</CardTitle>
           <CardDescription>
-            Sign in to manage contacts and send messages
+            Sign in to manage members and send messages
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -76,7 +76,7 @@ export default function LoginPageClient() {
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              className="w-full bg-red-600 hover:bg-red-700"
               disabled={loading}
             >
               {loading ? (

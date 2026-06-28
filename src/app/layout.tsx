@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "WhatsApp Hub",
-  description: "WhatsApp messaging dashboard with Google Sheets sync",
+  title: "Gymclub",
+  description: "Gymclub messaging dashboard with Google Sheets sync",
 };
 
 export default function RootLayout({

@@ -28,7 +28,7 @@ export function MessageBubble({
         className={cn(
           "relative max-w-[75%] rounded-2xl px-3 py-2 shadow-sm",
           isOutbound
-            ? "rounded-br-md bg-emerald-600 text-white"
+            ? "rounded-br-md bg-red-600 text-white"
             : "rounded-bl-md bg-white text-foreground"
         )}
       >
@@ -36,7 +36,7 @@ export function MessageBubble({
         <div
           className={cn(
             "mt-1 flex items-center justify-end gap-1 text-[10px]",
-            isOutbound ? "text-emerald-100" : "text-muted-foreground"
+            isOutbound ? "text-red-100" : "text-muted-foreground"
           )}
         >
           <span>{format(new Date(sentAt), "HH:mm")}</span>

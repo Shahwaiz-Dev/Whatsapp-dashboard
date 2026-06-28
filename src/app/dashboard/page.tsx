@@ -59,7 +59,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
         <p className="text-muted-foreground">
-          Your WhatsApp messaging dashboard at a glance
+          Your Gymclub dashboard at a glance
         </p>
       </div>
 
@@ -70,7 +70,7 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {card.title}
               </CardTitle>
-              <card.icon className="size-4 text-emerald-600" />
+              <card.icon className="size-4 text-red-600" />
             </CardHeader>
             <CardContent>
               {isLoading ? (
