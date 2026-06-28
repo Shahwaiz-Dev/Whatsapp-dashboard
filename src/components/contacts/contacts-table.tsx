@@ -224,7 +224,7 @@ export function ContactsTable({
                     </TableCell>
                   )}
                   <TableCell className="font-medium">
-                    {contact.name ?? "—"}
+                    {contact.name?.trim() ? contact.name : "Unknown"}
                   </TableCell>
                   <TableCell>{formatPhoneDisplay(contact.phone)}</TableCell>
                   <TableCell className="max-w-[200px] truncate text-muted-foreground">

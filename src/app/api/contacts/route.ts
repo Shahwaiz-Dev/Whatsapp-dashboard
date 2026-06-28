@@ -84,11 +84,29 @@ export async function GET(request: NextRequest) {
 
   const [total, contacts] = await Promise.all([
     Contact.countDocuments(filter),
-    Contact.find(filter)
-      .sort({ name: 1, phone: 1 })
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
-      .lean(),
+    Contact.aggregate([
+      { $match: filter },
+      {
+        $addFields: {
+          hasName: {
+            $cond: [
+              {
+                $gt: [
+                  { $strLenCP: { $trim: { input: { $ifNull: ["$name", ""] } } } },
+                  0,
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+      },
+      { $sort: { hasName: -1, name: 1, phone: 1 } },
+      { $skip: (page - 1) * pageSize },
+      { $limit: pageSize },
+      { $project: { hasName: 0 } },
+    ]),
   ]);
 
   const contactIds = contacts.map((c) => c._id.toString());
