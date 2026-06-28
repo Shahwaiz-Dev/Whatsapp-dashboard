@@ -33,9 +33,17 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# service account keys
+/credentials/
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local sqlite database
+prisma/*.db
+prisma/*.db-shm
+prisma/*.db-wal
