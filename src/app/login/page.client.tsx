@@ -13,10 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { useLocale } from "@/components/providers/locale-provider";
 
 export default function LoginPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLocale();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +37,11 @@ export default function LoginPageClient() {
 
     if (!res.ok) {
       const data = (await res.json()) as { error?: string };
-      setError(data.error ?? "Login failed");
+      const message =
+        data.error === "Invalid password"
+          ? t("login.invalidPassword")
+          : (data.error ?? t("login.loginFailed"));
+      setError(message);
       setLoading(false);
       return;
     }
@@ -51,21 +58,19 @@ export default function LoginPageClient() {
           <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-red-600 text-white">
             <MessageCircle className="size-6" />
           </div>
-          <CardTitle className="text-2xl">Gymclub</CardTitle>
-          <CardDescription>
-            Sign in to manage members and send messages
-          </CardDescription>
+          <CardTitle className="text-2xl">{t("login.title")}</CardTitle>
+          <CardDescription>{t("login.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password">Admin password</Label>
+              <Label htmlFor="password">{t("login.passwordLabel")}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter password"
+                  placeholder={t("login.passwordPlaceholder")}
                   className="pl-9"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -82,13 +87,16 @@ export default function LoginPageClient() {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />
-                  Signing in...
+                  {t("login.signingIn")}
                 </>
               ) : (
-                "Sign in"
+                t("login.signIn")
               )}
             </Button>
           </form>
+          <div className="mt-4 flex justify-center">
+            <LanguageSwitcher />
+          </div>
         </CardContent>
       </Card>
     </div>

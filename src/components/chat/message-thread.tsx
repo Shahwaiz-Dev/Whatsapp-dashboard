@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MessageBubble } from "@/components/chat/message-bubble";
 import { formatPhoneDisplay } from "@/lib/phone";
 import type { ContactRow } from "@/components/contacts/contacts-table";
+import { useLocale } from "@/components/providers/locale-provider";
 
 interface Message {
   id: string;
@@ -44,6 +45,7 @@ function getInitials(name: string | null, phone: string) {
 }
 
 export function MessageThread({ contactId }: { contactId: string }) {
+  const { t } = useLocale();
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -86,12 +88,14 @@ export function MessageThread({ contactId }: { contactId: string }) {
         body: JSON.stringify({ contactId, body: message.trim() }),
       });
       const result = (await res.json()) as { error?: string };
-      if (!res.ok) throw new Error(result.error ?? "Send failed");
+      if (!res.ok) throw new Error(result.error ?? t("chat.sendFailed"));
       setMessage("");
       await mutate();
       await globalMutate("/api/conversations");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Send failed");
+      toast.error(
+        err instanceof Error ? err.message : t("chat.sendFailed")
+      );
     } finally {
       setSending(false);
     }
@@ -100,7 +104,7 @@ export function MessageThread({ contactId }: { contactId: string }) {
   if (!contact && !isLoading) {
     return (
       <div className="flex h-full items-center justify-center text-muted-foreground">
-        Contact not found
+        {t("chat.contactNotFound")}
       </div>
     );
   }
@@ -140,7 +144,7 @@ export function MessageThread({ contactId }: { contactId: string }) {
         <div className="space-y-3">
           {messages.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground">
-              No messages yet. Send the first message below.
+              {t("chat.noMessagesYet")}
             </p>
           ) : (
             messages.map((msg) => (
@@ -160,7 +164,7 @@ export function MessageThread({ contactId }: { contactId: string }) {
       <div className="border-t bg-background p-3">
         <div className="flex gap-2">
           <Textarea
-            placeholder="Type a message..."
+            placeholder={t("chat.messagePlaceholder")}
             rows={2}
             value={message}
             onChange={(e) => setMessage(e.target.value)}

@@ -28,18 +28,26 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { useLocale } from "@/components/providers/locale-provider";
+import type { TranslationKey } from "@/lib/i18n";
 
-const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/contacts", label: "Contacts", icon: Users },
-  { href: "/dashboard/groups", label: "Groups", icon: UsersRound },
-  { href: "/dashboard/compose", label: "Compose", icon: Send },
-  { href: "/dashboard/chat", label: "Chat", icon: MessageSquare },
+const navItems: {
+  href: string;
+  labelKey: TranslationKey;
+  icon: typeof LayoutDashboard;
+}[] = [
+  { href: "/dashboard", labelKey: "nav.overview", icon: LayoutDashboard },
+  { href: "/dashboard/contacts", labelKey: "nav.contacts", icon: Users },
+  { href: "/dashboard/groups", labelKey: "nav.groups", icon: UsersRound },
+  { href: "/dashboard/compose", labelKey: "nav.compose", icon: Send },
+  { href: "/dashboard/chat", labelKey: "nav.chat", icon: MessageSquare },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useLocale();
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -56,13 +64,15 @@ export function AppSidebar() {
           </div>
           <div>
             <p className="text-sm font-semibold">Gymclub</p>
-            <p className="text-xs text-muted-foreground">Member messaging</p>
+            <p className="text-xs text-muted-foreground">
+              {t("nav.memberMessaging")}
+            </p>
           </div>
         </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("nav.navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
@@ -75,7 +85,7 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild isActive={isActive}>
                       <Link href={item.href}>
                         <item.icon />
-                        <span>{item.label}</span>
+                        <span>{t(item.labelKey)}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -85,14 +95,15 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border p-2">
+      <SidebarFooter className="border-t border-sidebar-border space-y-1 p-2">
+        <LanguageSwitcher />
         <Button
           variant="ghost"
           className="w-full justify-start gap-2"
           onClick={handleLogout}
         >
           <LogOut className="size-4" />
-          Sign out
+          {t("nav.signOut")}
         </Button>
       </SidebarFooter>
     </Sidebar>
@@ -100,6 +111,8 @@ export function AppSidebar() {
 }
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
+  const { t } = useLocale();
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -108,7 +121,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <SidebarTrigger />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <span className="text-sm text-muted-foreground">
-            Manage members, groups, and WhatsApp conversations
+            {t("nav.headerSubtitle")}
           </span>
         </header>
         <main className="flex-1 overflow-auto p-6">{children}</main>

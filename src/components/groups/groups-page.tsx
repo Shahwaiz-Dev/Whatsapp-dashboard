@@ -28,6 +28,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { ContactsTable } from "@/components/contacts/contacts-table";
 import { formatPhoneDisplay } from "@/lib/phone";
+import { useLocale } from "@/components/providers/locale-provider";
 
 interface Group {
   id: string;
@@ -40,6 +41,7 @@ interface Group {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export function GroupsPageContent() {
+  const { t } = useLocale();
   const { data, isLoading, mutate } = useSWR<Group[]>("/api/groups", fetcher);
   const [createOpen, setCreateOpen] = useState(false);
   const [memberOpen, setMemberOpen] = useState<string | null>(null);
@@ -61,24 +63,24 @@ export function GroupsPageContent() {
           memberIds: selectedContactIds,
         }),
       });
-      if (!res.ok) throw new Error("Failed to create group");
-      toast.success("Group created");
+      if (!res.ok) throw new Error(t("groups.createFailed"));
+      toast.success(t("groups.created"));
       setCreateOpen(false);
       setName("");
       setDescription("");
       setSelectedContactIds([]);
       await mutate();
     } catch {
-      toast.error("Failed to create group");
+      toast.error(t("groups.createFailed"));
     } finally {
       setSaving(false);
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this group?")) return;
+    if (!confirm(t("groups.deleteConfirm"))) return;
     await fetch(`/api/groups/${id}`, { method: "DELETE" });
-    toast.success("Group deleted");
+    toast.success(t("groups.deleted"));
     await mutate();
   }
 
@@ -91,13 +93,13 @@ export function GroupsPageContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ add: selectedContactIds }),
       });
-      if (!res.ok) throw new Error("Failed to add members");
-      toast.success("Members added");
+      if (!res.ok) throw new Error(t("groups.addMembersFailed"));
+      toast.success(t("groups.membersAdded"));
       setMemberOpen(null);
       setSelectedContactIds([]);
       await mutate();
     } catch {
-      toast.error("Failed to add members");
+      toast.error(t("groups.addMembersFailed"));
     } finally {
       setSaving(false);
     }
@@ -107,42 +109,40 @@ export function GroupsPageContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Groups</h1>
-          <p className="text-muted-foreground">
-            Organize contacts into recipient groups
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {t("groups.title")}
+          </h1>
+          <p className="text-muted-foreground">{t("groups.subtitle")}</p>
         </div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
             <Button className="bg-red-600 hover:bg-red-700">
               <Plus className="mr-2 size-4" />
-              New group
+              {t("groups.newGroup")}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Create group</DialogTitle>
-              <DialogDescription>
-                Add a name and optionally select initial members
-              </DialogDescription>
+              <DialogTitle>{t("groups.createTitle")}</DialogTitle>
+              <DialogDescription>{t("groups.createDescription")}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
               <div className="space-y-2">
-                <Label htmlFor="group-name">Name</Label>
+                <Label htmlFor="group-name">{t("common.name")}</Label>
                 <Input
                   id="group-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. VIP Customers"
+                  placeholder={t("groups.namePlaceholder")}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="group-desc">Description</Label>
+                <Label htmlFor="group-desc">{t("common.description")}</Label>
                 <Textarea
                   id="group-desc"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Optional description"
+                  placeholder={t("groups.descriptionPlaceholder")}
                   rows={2}
                 />
               </div>
@@ -155,7 +155,7 @@ export function GroupsPageContent() {
             </div>
             <DialogFooter>
               <Button onClick={handleCreate} disabled={saving || !name.trim()}>
-                Create group
+                {t("groups.createGroup")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -171,7 +171,7 @@ export function GroupsPageContent() {
       ) : !data?.length ? (
         <Card>
           <CardContent className="flex h-40 items-center justify-center text-muted-foreground">
-            No groups yet. Create your first group to organize recipients.
+            {t("groups.noGroups")}
           </CardContent>
         </Card>
       ) : (
@@ -186,7 +186,7 @@ export function GroupsPageContent() {
                   )}
                 </div>
                 <Badge variant="secondary">
-                  {group._count.members} members
+                  {t("groups.members", { count: group._count.members })}
                 </Badge>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -198,7 +198,9 @@ export function GroupsPageContent() {
                   ))}
                   {group.members.length > 5 && (
                     <Badge variant="outline">
-                      +{group.members.length - 5} more
+                      {t("common.more", {
+                        count: group.members.length - 5,
+                      })}
                     </Badge>
                   )}
                 </div>
@@ -213,12 +215,14 @@ export function GroupsPageContent() {
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm">
                         <UserPlus className="mr-1 size-4" />
-                        Add members
+                        {t("groups.addMembers")}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
                       <DialogHeader>
-                        <DialogTitle>Add members to {group.name}</DialogTitle>
+                        <DialogTitle>
+                          {t("groups.addMembersTitle", { name: group.name })}
+                        </DialogTitle>
                       </DialogHeader>
                       <ContactsTable
                         selectable
@@ -231,7 +235,7 @@ export function GroupsPageContent() {
                           onClick={() => handleAddMembers(group.id)}
                           disabled={saving || selectedContactIds.length === 0}
                         >
-                          Add selected
+                          {t("groups.addSelected")}
                         </Button>
                       </DialogFooter>
                     </DialogContent>

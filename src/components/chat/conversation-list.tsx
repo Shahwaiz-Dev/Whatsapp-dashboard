@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { formatPhoneDisplay } from "@/lib/phone";
+import { useLocale } from "@/components/providers/locale-provider";
 
 interface Conversation {
   id: string;
@@ -36,6 +37,7 @@ function getInitials(name: string | null, phone: string) {
 
 export function ConversationList() {
   const pathname = usePathname();
+  const { t, dateLocale } = useLocale();
   const { data, isLoading } = useSWR<Conversation[]>(
     "/api/conversations",
     fetcher,
@@ -55,7 +57,7 @@ export function ConversationList() {
   if (!data?.length) {
     return (
       <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
-        No conversations yet. Send a message or wait for inbound replies.
+        {t("chat.noConversations")}
       </div>
     );
   }
@@ -91,6 +93,7 @@ export function ConversationList() {
                     <span className="shrink-0 text-[11px] text-muted-foreground">
                       {formatDistanceToNow(new Date(conv.lastMessageAt), {
                         addSuffix: false,
+                        locale: dateLocale,
                       })}
                     </span>
                   )}
@@ -98,8 +101,8 @@ export function ConversationList() {
                 <div className="flex items-center justify-between gap-2">
                   <p className="truncate text-sm text-muted-foreground">
                     {lastMsg
-                      ? `${lastMsg.direction === "outbound" ? "You: " : ""}${lastMsg.body}`
-                      : "No messages"}
+                      ? `${lastMsg.direction === "outbound" ? t("common.you") : ""}${lastMsg.body}`
+                      : t("chat.noMessages")}
                   </p>
                   {conv.unreadCount > 0 && (
                     <Badge className="size-5 shrink-0 justify-center rounded-full bg-red-600 p-0 text-[10px]">

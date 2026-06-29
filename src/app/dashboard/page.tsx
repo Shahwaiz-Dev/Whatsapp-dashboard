@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
+import { useLocale } from "@/components/providers/locale-provider";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -23,33 +24,34 @@ interface Stats {
 }
 
 export default function DashboardPage() {
+  const { t, dateLocale } = useLocale();
   const { data, isLoading } = useSWR<Stats>("/api/stats", fetcher, {
     refreshInterval: 30000,
   });
 
   const cards = [
     {
-      title: "Contacts",
+      title: t("dashboard.contactsCard"),
       value: data?.contactCount ?? 0,
-      description: "Synced from Google Sheets",
+      description: t("dashboard.contactsDesc"),
       icon: Users,
     },
     {
-      title: "Groups",
+      title: t("dashboard.groupsCard"),
       value: data?.groupCount ?? 0,
-      description: "Recipient groups created",
+      description: t("dashboard.groupsDesc"),
       icon: UsersRound,
     },
     {
-      title: "Sent today",
+      title: t("dashboard.sentToday"),
       value: data?.messagesSentToday ?? 0,
-      description: "Outbound WhatsApp messages",
+      description: t("dashboard.sentTodayDesc"),
       icon: Send,
     },
     {
-      title: "Unread chats",
+      title: t("dashboard.unreadChats"),
       value: data?.unreadChats ?? 0,
-      description: "Conversations needing attention",
+      description: t("dashboard.unreadChatsDesc"),
       icon: MessageSquare,
     },
   ];
@@ -57,10 +59,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
-        <p className="text-muted-foreground">
-          Your Gymclub dashboard at a glance
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t("dashboard.title")}
+        </h1>
+        <p className="text-muted-foreground">{t("dashboard.subtitle")}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -88,10 +90,8 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Last sheet sync</CardTitle>
-          <CardDescription>
-            Most recent contact import from Google Sheets
-          </CardDescription>
+          <CardTitle>{t("dashboard.lastSync")}</CardTitle>
+          <CardDescription>{t("dashboard.lastSyncDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -100,13 +100,17 @@ export default function DashboardPage() {
             <p className="text-sm">
               {formatDistanceToNow(new Date(data.lastSync.createdAt), {
                 addSuffix: true,
+                locale: dateLocale,
               })}
               {" · "}
-              {data.lastSync.added} added, {data.lastSync.updated} updated
+              {t("dashboard.lastSyncDetail", {
+                added: data.lastSync.added,
+                updated: data.lastSync.updated,
+              })}
             </p>
           ) : (
             <p className="text-sm text-muted-foreground">
-              No sync yet. Go to Contacts and click Sync from Sheet.
+              {t("dashboard.noSync")}
             </p>
           )}
         </CardContent>

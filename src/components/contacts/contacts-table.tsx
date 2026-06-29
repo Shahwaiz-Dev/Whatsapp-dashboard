@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPhoneDisplay } from "@/lib/phone";
+import { useLocale } from "@/components/providers/locale-provider";
 
 export interface ContactRow {
   id: string;
@@ -60,6 +61,7 @@ export function ContactsTable({
   onSelectionChange,
   compact = false,
 }: ContactsTableProps) {
+  const { t } = useLocale();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -106,13 +108,19 @@ export function ContactsTable({
         skipped?: number;
         error?: string;
       };
-      if (!res.ok) throw new Error(result.error ?? "Sync failed");
+      if (!res.ok) throw new Error(result.error ?? t("contacts.syncFailed"));
       toast.success(
-        `Synced: ${result.added} added, ${result.updated} updated, ${result.skipped} skipped`
+        t("contacts.syncSuccess", {
+          added: result.added ?? 0,
+          updated: result.updated ?? 0,
+          skipped: result.skipped ?? 0,
+        })
       );
       await mutate();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Sync failed");
+      toast.error(
+        err instanceof Error ? err.message : t("contacts.syncFailed")
+      );
     } finally {
       setSyncing(false);
     }
@@ -137,13 +145,18 @@ export function ContactsTable({
     }
   }
 
+  const contactCountLabel =
+    total === 1
+      ? t("contacts.contactCountOne", { count: total })
+      : t("contacts.contactCountOther", { count: total });
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-sm flex-1">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search contacts..."
+            placeholder={t("contacts.searchPlaceholder")}
             className="pl-9"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -158,16 +171,18 @@ export function ContactsTable({
             <RefreshCw
               className={`mr-2 size-4 ${syncing ? "animate-spin" : ""}`}
             />
-            {syncing ? "Syncing..." : "Sync from Sheet"}
+            {syncing ? t("contacts.syncing") : t("contacts.syncFromSheet")}
           </Button>
         )}
       </div>
 
       {!compact && data && (
         <p className="text-sm text-muted-foreground">
-          {total.toLocaleString()} contact{total !== 1 ? "s" : ""}
-          {debouncedSearch ? ` matching "${debouncedSearch}"` : ""}
-          {isValidating && !syncing ? " · Updating..." : ""}
+          {contactCountLabel}
+          {debouncedSearch
+            ? t("contacts.matching", { query: debouncedSearch })
+            : ""}
+          {isValidating && !syncing ? t("contacts.updating") : ""}
         </p>
       )}
 
@@ -180,14 +195,14 @@ export function ContactsTable({
                   <Checkbox
                     checked={allPageSelected}
                     onCheckedChange={toggleAllOnPage}
-                    aria-label="Select all on this page"
+                    aria-label={t("contacts.selectAll")}
                   />
                 </TableHead>
               )}
-              <TableHead>Name</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("common.phone")}</TableHead>
+              <TableHead>{t("common.email")}</TableHead>
+              <TableHead>{t("contacts.status")}</TableHead>
               {!selectable && <TableHead className="w-20" />}
             </TableRow>
           </TableHeader>
@@ -206,7 +221,7 @@ export function ContactsTable({
                   colSpan={selectable ? 6 : 5}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No contacts found. Sync from Google Sheets to get started.
+                  {t("contacts.noContacts")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -224,7 +239,7 @@ export function ContactsTable({
                     </TableCell>
                   )}
                   <TableCell className="font-medium">
-                    {contact.name?.trim() ? contact.name : "Unknown"}
+                    {contact.name?.trim() ? contact.name : t("common.unknown")}
                   </TableCell>
                   <TableCell>{formatPhoneDisplay(contact.phone)}</TableCell>
                   <TableCell className="max-w-[200px] truncate text-muted-foreground">
@@ -233,10 +248,12 @@ export function ContactsTable({
                   <TableCell>
                     {contact.canReply ? (
                       <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
-                        Can reply
+                        {t("contacts.canReply")}
                       </Badge>
                     ) : (
-                      <Badge variant="secondary">Template required</Badge>
+                      <Badge variant="secondary">
+                        {t("contacts.templateRequired")}
+                      </Badge>
                     )}
                   </TableCell>
                   {!selectable && (
@@ -260,10 +277,13 @@ export function ContactsTable({
       {totalPages > 1 && (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-muted-foreground">
-            Page {page} of {totalPages}
+            {t("contacts.pageOf", { page, totalPages })}
             {" · "}
-            Showing {(page - 1) * PAGE_SIZE + 1}–
-            {Math.min(page * PAGE_SIZE, total)} of {total.toLocaleString()}
+            {t("contacts.showing", {
+              from: (page - 1) * PAGE_SIZE + 1,
+              to: Math.min(page * PAGE_SIZE, total),
+              total: total.toLocaleString(),
+            })}
           </p>
           <div className="flex items-center gap-2">
             <Button
@@ -273,7 +293,7 @@ export function ContactsTable({
               disabled={page <= 1 || isValidating}
             >
               <ChevronLeft className="size-4" />
-              Previous
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -281,7 +301,7 @@ export function ContactsTable({
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages || isValidating}
             >
-              Next
+              {t("common.next")}
               <ChevronRight className="size-4" />
             </Button>
           </div>
@@ -290,7 +310,7 @@ export function ContactsTable({
 
       {selectable && selectedIds.length > 0 && (
         <p className="text-sm text-muted-foreground">
-          {selectedIds.length} selected across all pages
+          {t("contacts.selectedAcrossPages", { count: selectedIds.length })}
         </p>
       )}
     </div>
@@ -298,13 +318,15 @@ export function ContactsTable({
 }
 
 export function ContactsPageContent() {
+  const { t } = useLocale();
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Contacts</h1>
-        <p className="text-muted-foreground">
-          Manage contacts synced from your Google Sheet
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t("contacts.title")}
+        </h1>
+        <p className="text-muted-foreground">{t("contacts.subtitle")}</p>
       </div>
       <ContactsTable />
     </div>
